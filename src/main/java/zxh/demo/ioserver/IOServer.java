@@ -3,6 +3,7 @@ package zxh.demo.ioserver;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketTimeoutException;
 import java.util.Objects;
 
 /**
@@ -14,22 +15,26 @@ public class IOServer {
 
     private ServerSocket serverSocket = null;
     private static final int PORT = 12345;
+    private static final int TIME_OUT = 1000;
 
     public void init() {
-        try(ServerSocket serverSocket = new ServerSocket(PORT)) {
-            this.serverSocket = serverSocket;
+        try {
+            serverSocket = new ServerSocket(PORT);
+            this.serverSocket.setSoTimeout(TIME_OUT);
         } catch (IOException e) {
             throw new RuntimeException("Server socket init failed", e);
         }
     }
 
-    public Socket listen() {
+    public Socket accept() throws SocketTimeoutException {
         if (Objects.isNull(serverSocket)) {
             throw new RuntimeException("Call init() first please!");
         }
 
-        try (Socket clientSocket = this.serverSocket.accept()) {
-            return clientSocket;
+        try {
+            return serverSocket.accept();
+        } catch (SocketTimeoutException timeoutE) {
+            throw  timeoutE;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -37,7 +42,7 @@ public class IOServer {
 
     public void destroy() {
         try {
-            this.serverSocket.close();
+            serverSocket.close();
         } catch (IOException e) {
             // already closed
         }
