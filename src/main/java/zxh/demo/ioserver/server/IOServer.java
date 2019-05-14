@@ -1,4 +1,4 @@
-package zxh.demo.ioserver;
+package zxh.demo.ioserver.server;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -15,12 +15,10 @@ public class IOServer {
 
     private ServerSocket serverSocket = null;
     private static final int PORT = 12345;
-    private static final int TIME_OUT = 1000;
 
     public void init() {
         try {
             serverSocket = new ServerSocket(PORT);
-            this.serverSocket.setSoTimeout(TIME_OUT);
         } catch (IOException e) {
             throw new RuntimeException("Server socket init failed", e);
         }
