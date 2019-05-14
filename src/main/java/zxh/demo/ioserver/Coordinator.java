@@ -1,5 +1,9 @@
 package zxh.demo.ioserver;
 
+import zxh.demo.ioserver.handler.SocketHandler;
+import zxh.demo.ioserver.handler.strategy.ActionFactory;
+import zxh.demo.ioserver.server.IOServer;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
@@ -53,7 +57,7 @@ public class Coordinator {
             try {
                 Socket acceptedSocket = ioServer.accept();
                 taskPool.execute(
-                        () -> SocketHandler.INSTANCE.handle(acceptedSocket)
+                        () -> SocketHandler.INSTANCE.handle(acceptedSocket, ActionFactory.ActionType.PRINTER)
                 );
                 sockets.add(acceptedSocket);
             } catch (SocketTimeoutException e) {
