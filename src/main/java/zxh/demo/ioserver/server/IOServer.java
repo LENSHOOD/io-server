@@ -32,7 +32,7 @@ public class IOServer {
         try {
             return serverSocket.accept();
         } catch (SocketTimeoutException timeoutE) {
-            throw  timeoutE;
+            throw timeoutE;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
