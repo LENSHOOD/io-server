@@ -1,5 +1,7 @@
 package zxh.demo.ioserver;
 
+import zxh.demo.ioserver.handler.strategy.ActionFactory;
+
 import java.util.Scanner;
 
 /**
@@ -10,7 +12,7 @@ import java.util.Scanner;
 public class Starter {
     public static void main(String[] args) {
         Coordinator coordinator = new Coordinator();
-        coordinator.init();
+        coordinator.init(ActionFactory.ActionType.PRINTER);
         coordinator.startUp();
 
         Scanner scanner = new Scanner(System.in);

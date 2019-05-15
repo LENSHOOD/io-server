@@ -4,6 +4,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import zxh.demo.ioserver.handler.strategy.ActionFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,7 +18,7 @@ public class CoordinatorTester {
     @BeforeEach
     void preInit() {
         coordinator = new Coordinator();
-        coordinator.init();
+        coordinator.init(ActionFactory.ActionType.ECHOER);
     }
 
     @AfterEach

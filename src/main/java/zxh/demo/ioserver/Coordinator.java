@@ -20,11 +20,15 @@ public class Coordinator {
     private ExecutorService taskPool = Executors.newCachedThreadPool();
     private boolean stopFlag = false;
 
+    private ActionFactory.ActionType actionType = null;
+
     private List<Socket> sockets = new ArrayList<>();
 
-    public void init() {
+    public void init(ActionFactory.ActionType actionType) {
         ioServer = new IOServer();
         ioServer.init();
+
+        this.actionType = actionType;
     }
 
     public void startUp() {
@@ -57,7 +61,7 @@ public class Coordinator {
             try {
                 Socket acceptedSocket = ioServer.accept();
                 taskPool.execute(
-                        () -> SocketHandler.INSTANCE.handle(acceptedSocket, ActionFactory.ActionType.PRINTER)
+                        () -> SocketHandler.INSTANCE.handle(acceptedSocket, actionType)
                 );
                 sockets.add(acceptedSocket);
             } catch (SocketTimeoutException e) {
