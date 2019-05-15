@@ -1,4 +1,4 @@
-package zxh.demo.ioserver;
+package zxh.demo.ioserver.server;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;

@@ -11,7 +11,7 @@ import java.io.OutputStream;
 public class ActionFactory {
 
     public enum ActionType {
-        PRINTER, ECHOER;
+        PRINTER, ECHOER, HTTP_REQUEST_ANALYZER;
     }
 
     private ActionFactory() {}
@@ -22,6 +22,8 @@ public class ActionFactory {
                 return new Printer(is, os);
             case ECHOER:
                 return new Echoer(is, os);
+            case HTTP_REQUEST_ANALYZER:
+                return new HttpRequestAnalyzer(is, os);
             default:
                 return new EmptyAction(is, os);
         }
