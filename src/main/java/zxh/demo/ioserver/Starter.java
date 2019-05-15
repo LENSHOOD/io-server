@@ -17,7 +17,7 @@ public class Starter {
 
         Scanner scanner = new Scanner(System.in);
         System.out.println("Input Anything To Stop.");
-        while (!scanner.hasNext());
+        scanner.hasNext();
 
         coordinator.stop();
     }
