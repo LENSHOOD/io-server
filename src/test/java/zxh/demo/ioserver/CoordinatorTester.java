@@ -33,13 +33,15 @@ public class CoordinatorTester {
             OutputStream os = testSocket.getOutputStream();
             InputStream is = testSocket.getInputStream();
 
-            byte[] expectedMsg = {0xa, 0xb, 0xf};
+            byte[] expectedMsg = {0xa, 0xb, -0x80};
             os.write(expectedMsg);
 
             Thread.sleep(1000);
 
             byte[] actualMsg = {0x0, 0x0, 0x0};
             is.read(actualMsg);
+
+            testSocket.close();
 
             Assertions.assertArrayEquals(expectedMsg, actualMsg);
 
