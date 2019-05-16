@@ -1,26 +1,25 @@
 package zxh.demo.ioserver.handler.strategy;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /**
  * 
  * @author zhangxuhai
  * @date 2019-05-14
 */
-public class EmptyAction extends Action {
+public class EmptyAction implements Action {
     class EmptyActionException extends RuntimeException {
         EmptyActionException() {
             super("No action provided, please create action with valid action type!");
         }
     }
 
-    EmptyAction(InputStream is, OutputStream os) {
-        super(is, os);
+    @Override
+    public boolean isStop() {
+        return false;
     }
 
     @Override
-    public void doAction() {
+    public byte[] doAction(byte[] inputByteArray) {
         throw new EmptyActionException();
     }
+
 }

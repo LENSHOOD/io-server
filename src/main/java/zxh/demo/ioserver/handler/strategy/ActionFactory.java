@@ -1,8 +1,5 @@
 package zxh.demo.ioserver.handler.strategy;
 
-import java.io.InputStream;
-import java.io.OutputStream;
-
 /**
  * 
  * @author zhangxuhai
@@ -16,16 +13,16 @@ public class ActionFactory {
 
     private ActionFactory() {}
 
-    public static Action create(ActionType type, InputStream is, OutputStream os) {
+    public static Action create(ActionType type) {
         switch (type) {
             case PRINTER:
-                return new Printer(is, os);
+                return new Printer();
             case ECHOER:
-                return new Echoer(is, os);
+                return new Echoer();
             case HTTP_REQUEST_ANALYZER:
-                return new HttpRequestAnalyzer(is, os);
+                return new HttpRequestAnalyzer();
             default:
-                return new EmptyAction(is, os);
+                return new EmptyAction();
         }
     }
 }

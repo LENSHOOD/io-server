@@ -1,68 +1,88 @@
 package zxh.demo.ioserver.handler.strategy;
 
-import java.io.*;
 import java.util.*;
 
-public class HttpRequestAnalyzer extends Action{
+public class HttpRequestAnalyzer implements Action{
 
     class RequestLine {
         private String method;
         private String requestTarget;
         private String httpVersion;
 
-        public RequestLine(String method, String requestTarget, String httpVersion) {
+        RequestLine(String method, String requestTarget, String httpVersion) {
             this.method = method;
             this.requestTarget = requestTarget;
             this.httpVersion = httpVersion;
         }
 
-        public String getMethod() {
+        String getMethod() {
             return method;
         }
 
-        public String getRequestTarget() {
+        String getRequestTarget() {
             return requestTarget;
         }
 
-        public String getHttpVersion() {
+        String getHttpVersion() {
             return httpVersion;
         }
     }
 
-    HttpRequestAnalyzer(InputStream is, OutputStream os) {
-        super(is, os);
+    private boolean stopFlag = false;
+    private boolean isFirstTimeEntry = true;
+    private StringBuilder concatBuilder = null;
+
+    private RequestLine requestLine = null;
+    private Map<String, String> headers = new HashMap<>();
+
+    @Override
+    public boolean isStop() {
+        return stopFlag;
     }
 
     @Override
-    public void doAction() {
-        try(
-                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-                BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os))
-        ) {
-            RequestLine requestLine = analyzeRequestLine(reader.readLine());
+    public byte[] doAction(byte[] inputByteArray) {
 
-            List<String> headersRaw = new ArrayList<>();
-            while (true) {
-                String line = reader.readLine();
-                if ("".equals(line)) {
-                    break;
-                }
-
-                headersRaw.add(line);
-            }
-            Map<String, String> headers = analyzeHeaders(headersRaw);
-
-            if (hasContent(headers)) {
-                // ignore
-            }
-
-            String response = buildResponse(requestLine, headers);
-            writer.write(response, 0, response.length());
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        String[] requestRawLines = new String(inputByteArray).split("\r?\n", -1);
+        if (isFirstTimeEntry) {
+            requestLine = analyzeRequestLine(requestRawLines[0]);
         }
 
+        List<String> headersRaw = new ArrayList<>();
+        for (int i = 0; i < requestRawLines.length; i++) {
+            if (isFirstTimeEntry) {
+                isFirstTimeEntry = false;
+                continue;
+            }
+
+            String line = requestRawLines[i];
+            if ("".equals(line)) {
+                stopFlag = true;
+                break;
+            }
+
+            headersRaw.add(line);
+        }
+
+
+        if (!Objects.isNull(concatBuilder)) {
+            concatBuilder.append(headersRaw.get(0));
+            headersRaw.set(0, concatBuilder.toString());
+        }
+
+        if (!stopFlag) {
+            int lastIndex = headersRaw.size() - 1;
+            concatBuilder = new StringBuilder(headersRaw.get(lastIndex));
+            headersRaw.remove(lastIndex);
+        }
+
+        headers.putAll(analyzeHeaders(headersRaw));
+
+        if (hasContent(headers)) {
+            // ignore
+        }
+
+        return stopFlag ? buildResponse(requestLine, headers).getBytes() : null;
     }
 
     private RequestLine analyzeRequestLine(String requestLineRaw) {

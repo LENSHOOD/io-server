@@ -1,9 +1,12 @@
 package zxh.demo.ioserver.handler;
 
+import zxh.demo.ioserver.handler.strategy.Action;
 import zxh.demo.ioserver.handler.strategy.ActionFactory;
 
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
+import java.util.Arrays;
+import java.util.Objects;
 
 public enum SocketHandler {
     /**
@@ -12,16 +15,22 @@ public enum SocketHandler {
     INSTANCE;
 
     public void handle(Socket socket, ActionFactory.ActionType type) {
-        try {
-            if (socket.isClosed()) {
-                return;
-            }
+        if (socket.isClosed()) {
+            return;
+        }
 
-            ActionFactory.create(
-                        type,
-                        socket.getInputStream(),
-                        socket.getOutputStream())
-                    .doAction();
+        Action action = ActionFactory.create(type);
+        try (BufferedInputStream is = new BufferedInputStream(socket.getInputStream());
+             BufferedOutputStream os = new BufferedOutputStream(socket.getOutputStream())) {
+
+            byte[] inputBytes = new byte[1024];
+            while (!action.isStop()) {
+                int length = is.read(inputBytes);
+                byte[] responseSection = action.doAction(Arrays.copyOf(inputBytes, length));
+                if (Objects.nonNull(responseSection)) {
+                    os.write(responseSection);
+                }
+            }
 
         } catch (IOException e) {
             e.printStackTrace();
