@@ -82,7 +82,13 @@ public class HttpRequestAnalyzer implements Action{
             // ignore
         }
 
-        return stopFlag ? buildResponse(requestLine, headers).getBytes() : null;
+        if (!stopFlag) {
+            return null;
+        }
+
+        byte[] response = buildResponse(requestLine, headers).getBytes();
+        clear();
+        return response;
     }
 
     private RequestLine analyzeRequestLine(String requestLineRaw) {
@@ -122,5 +128,13 @@ public class HttpRequestAnalyzer implements Action{
                         + "\n\n"
                         + contentResponse;
 
+    }
+
+    private void clear() {
+        stopFlag = false;
+        isFirstTimeEntry = true;
+        concatBuilder = null;
+        requestLine = null;
+        headers = new HashMap<>();
     }
 }
