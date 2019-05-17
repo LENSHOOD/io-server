@@ -33,3 +33,6 @@ target/
 *.ipr
 *.iws
 out
+
+# Mac
+.DS_Store
